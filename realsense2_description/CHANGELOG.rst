@@ -2,23 +2,6 @@
 Changelog for package realsense2_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-4.55.1 (2024-05-28)
--------------------
-* PR `#2957 <https://github.com/IntelRealSense/realsense-ros/issues/2957>`_ from hellototoro: to_urdf fun retrun a str, not a BufferedRandom
-* PR `#2953 <https://github.com/IntelRealSense/realsense-ros/issues/2953>`_ from Arun-Prasad-V: Added urdf & mesh files for D405 model
-* PR `#2841 <https://github.com/IntelRealSense/realsense-ros/issues/2841>`_ from SamerKhshiboun: Remove Dashing, Eloquent, Foxy, L500 and SR300 support
-* PR `#2817 <https://github.com/IntelRealSense/realsense-ros/issues/2817>`_ from karina-ranadive: Replaced Deprecated function mktemp to TemporaryFile
-* Contributors: Arun-Prasad-V, karina-ranadive, SamerKhshiboun, hellototoro
-
-4.54.1 (2023-06-27)
--------------------
-* Update mesh path
-* clone PR1637 to ros2-development
-* Fix Apache License Header and Intel Copyrights
-* apply copyrights and license on project
-* Replace deprecated parameter node_name with name
-* Contributors: Arun Prasad, Nir Azkiel, SamerKhshiboun, augustelalande, marqrazz
-
 4.51.1 (2022-09-13)
 -------------------
 * Add copyright and license to all ROS2-beta source files

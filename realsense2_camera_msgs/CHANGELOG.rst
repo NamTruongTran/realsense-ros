@@ -2,19 +2,6 @@
 Changelog for package realsense2_camera_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-4.55.1 (2024-05-28)
--------------------
-* PR `#2830 <https://github.com/IntelRealSense/realsense-ros/issues/2830>`_ from SamerKhshiboun: Add RGBD + reduce changes between hkr and development
-* Contributors: SamerKhshiboun
-
-4.54.1 (2023-06-27)
--------------------
-* add info about extrinsic msg format in Extrinsics.msg and README.md
-* Expose USB port in DeviceInfo service
-* Fix Apache License Header and Intel Copyrights
-* apply copyrights and license on project
-* Contributors: Arun Prasad, Nir Azkiel, SamerKhshiboun, Stephan Wirth
-
 4.51.1 (2022-09-13)
 -------------------
 * Add copyright and license to all ROS2-beta source files

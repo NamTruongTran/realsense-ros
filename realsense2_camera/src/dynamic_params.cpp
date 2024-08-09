@@ -1,16 +1,5 @@
-// Copyright 2023 Intel Corporation. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// License: Apache 2.0. See LICENSE file in root directory.
+// Copyright(c) 2022 Intel Corporation. All Rights Reserved.
 
 #include <dynamic_params.h>
 
@@ -25,8 +14,6 @@ namespace realsense2_camera
         _params_backend.add_on_set_parameters_callback(
             [this](const std::vector<rclcpp::Parameter> & parameters) 
                 { 
-                    rcl_interfaces::msg::SetParametersResult result;
-                    result.successful = true;
                     for (const auto & parameter : parameters) 
                     {
                         try
@@ -45,15 +32,15 @@ namespace realsense2_camera
                                 }
                             }
                         }
+                        catch(const std::out_of_range& e)
+                        {}
                         catch(const std::exception& e)
                         {
-                            result.successful = false;
-                            result.reason = e.what();
-                            ROS_WARN_STREAM("Set parameter {" << parameter.get_name()
-                                                            << "} failed: " << e.what());
+                            std::cerr << e.what() << ":" << parameter.get_name() << '\n';
                         }                            
                     }
-
+                    rcl_interfaces::msg::SetParametersResult result;
+                    result.successful = true;
                     return result;
                 });
         monitor_update_functions(); // Start parameters update thread
@@ -72,7 +59,8 @@ namespace realsense2_camera
     {
         int time_interval(1000);
         std::function<void()> func = [this, time_interval](){
-            std::unique_lock<std::mutex> lock(_mu);
+            std::mutex mu;
+            std::unique_lock<std::mutex> lock(mu);
             while(_is_running) {
                 _update_functions_cv.wait_for(lock, std::chrono::milliseconds(time_interval), [&]{return !_is_running || !_update_functions_v.empty();});
                 while (!_update_functions_v.empty())
@@ -115,10 +103,10 @@ namespace realsense2_camera
         try
         {
             ROS_DEBUG_STREAM("setParam::Setting parameter: " << param_name);
-#if defined(FOXY)
-            //do nothing for old versions (foxy)
+#if defined(DASHING) || defined(ELOQUENT) || defined(FOXY)
+            //do nothing for old versions
 #else
-            descriptor.dynamic_typing=true;
+            descriptor.dynamic_typing=true; // Without this, undeclare_parameter() throws in Galactic onward.
 #endif
             if (!_node.get_parameter(param_name, result_value))
             {
@@ -155,14 +143,7 @@ namespace realsense2_camera
             };
         if (result_value != initial_value && func)
         {
-            try
-            {
-                func(rclcpp::Parameter(param_name, result_value));
-            }
-            catch(const std::exception& e)
-            {
-                ROS_WARN_STREAM("Set parameter {" << param_name << "} failed: " << e.what());
-            } 
+            func(rclcpp::Parameter(param_name, result_value));
         }
         return result_value;
     }
@@ -271,12 +252,6 @@ namespace realsense2_camera
         _param_functions.erase(param_name);
     }
 
-    template <class T>
-    T Parameters::getParam(std::string param_name)
-    {
-        return _node.get_parameter(param_name).get_value<T>();
-    }
-
     template void Parameters::setParamT<bool>(std::string param_name, bool& param, std::function<void(const rclcpp::Parameter&)> func, rcl_interfaces::msg::ParameterDescriptor descriptor);
     template void Parameters::setParamT<int>(std::string param_name, int& param, std::function<void(const rclcpp::Parameter&)> func, rcl_interfaces::msg::ParameterDescriptor descriptor);
     template void Parameters::setParamT<double>(std::string param_name, double& param, std::function<void(const rclcpp::Parameter&)> func, rcl_interfaces::msg::ParameterDescriptor descriptor);
@@ -294,6 +269,4 @@ namespace realsense2_camera
     template void Parameters::queueSetRosValue<int>(const std::string& param_name, const int value);
 
     template int Parameters::readAndDeleteParam<int>(std::string param_name, const int& initial_value);
-
-    template bool Parameters::getParam<bool>(std::string param_name);
 }
