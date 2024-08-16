@@ -13,17 +13,16 @@ name: pre-release
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the ros2-development branch
+  # Triggers the workflow on push or pull request events but only for the ros2-beta branch
   push:
     branches:
-      - ros2-development
+      - ros2-beta
   pull_request:
     branches:
-      - ros2-development
+      - ros2-beta
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-permissions: read-all
 
 jobs:
   build:
@@ -32,12 +31,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distro: [iron, humble]
+        ros_distro: [galactic, foxy]
         include:
-        - ros_distro: 'iron'
-          os: ubuntu-22.04
-        - ros_distro: 'humble'
-          os: ubuntu-22.04
+        - ros_distro: 'galactic'
+          os: ubuntu-20.04
+        - ros_distro: 'foxy'
+          os: ubuntu-20.04
           
     env:
       ROS_DISTRO: ${{ matrix.ros_distro }}
@@ -45,6 +44,6 @@ jobs:
       BASEDIR: ${{ github.workspace }}/.work
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
       - name: industrial_ci
         uses: ros-industrial/industrial_ci@master
